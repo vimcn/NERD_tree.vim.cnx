@@ -1,0 +1,6 @@
+
+NERD_tree.vim 中文文档
+======================
+
+这是一份针对 [NERD_tree.vim](https://github.com/scrooloose/nerdtree)
+[@vim.org](http://www.vim.org/scripts/script.php?script_id=1658) 文档的中文翻译。
