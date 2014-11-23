@@ -717,11 +717,11 @@ NERD tree 有一个可以通过 API 编程的菜单（见 |NERDTreeMenuAPI| ）�
 如果设置为1，当执行 >
     :edit <some directory>
 <
-会在目标窗口打开一个“从属”的 NERD tree 来代替 netrw 。
+会在目标窗口打开一个“次等”的 NERD tree 来代替 netrw 。
 
-“从属”的 NERD tree 在下面几个方面和普通的有所区别：
+“次等”的 NERD tree 在下面几个方面和普通的有所区别：
     1. 'o' 会在和树同一个窗口打开文件，替换掉当前打开的内容。
-    2. 在同一个标签内你可以有任意多的“从属”的 NERD tree 。
+    2. 在同一个标签内你可以有任意多的“次等”的 NERD tree 。
 
 ------------------------------------------------------------------------------
                                                             *'NERDTreeIgnore'*
@@ -942,54 +942,49 @@ NERD tree 被渲染的时候，被 'NERDTreeIgnore' 中的正则表达式匹配�
 <
 
 ==============================================================================
-4. The NERD tree API                                             *NERDTreeAPI*
+4. NERD tree API                                                 *NERDTreeAPI*
 
-The NERD tree script allows you to add custom key mappings and menu items via
-a set of API calls. Any scripts that use this API should be placed in
-~/.vim/nerdtree_plugin/ (*nix) or ~/vimfiles/nerdtree_plugin (windows).
+NERD tree 插件允许你通过 API 添加自定义的按键绑定和菜单项。任何使用 API 的脚本
+需要被放在 ~/.vim/nerdtree_plugin/ (*nix系统) 或
+~/vimfiles/nerdtree_plugin (windows系统)
 
-The script exposes some prototype objects that can be used to manipulate the
-tree and/or get information from it: >
+插件导出了一些可以用来操作树 和/或 从中获得信息的原型对象： >
     g:NERDTreePath
     g:NERDTreeDirNode
     g:NERDTreeFileNode
     g:NERDTreeBookmark
 <
-See the code/comments in NERD_tree.vim to find how to use these objects. The
-following code conventions are used:
-    * class members start with a capital letter
-    * instance members start with a lower case letter
-    * private members start with an underscore
+参考 NERD_tree 中的代码/注释来找到使用这些对象的方法。使用了下面的代码约定：
+    * 类成员变量以大写字母开头
+    * 实例成员变量以小写字母开头
+    * 私有成员变量以下划线开头
 
-See this blog post for more details:
+更多细节见博客文章：
  http://got-ravings.blogspot.com/2008/09/vim-pr0n-prototype-based-objects.html
 
 ------------------------------------------------------------------------------
-4.1. Key map API                                           *NERDTreeKeymapAPI*
+4.1. 按键绑定 API                                          *NERDTreeKeymapAPI*
 
 NERDTreeAddKeyMap({options})                             *NERDTreeAddKeyMap()*
-    Adds a new keymapping for all NERD tree buffers.
-    {options} must be a dictionary, and must contain the following keys:
-    "key" - the trigger key for the new mapping
-    "callback" - the function the new mapping will be bound to
-    "quickhelpText" - the text that will appear in the quickhelp (see
-    |NERDTree-?|)
-    "override" - if 1 then this new mapping will override whatever previous
-    mapping was defined for the key/scope combo. Useful for overriding the
-    default mappings.
+    为所有 NERD tree 缓冲区添加一个新的按键绑定。
+    {options} 必须是一个字典类型，必须包含下面的键：
+    "key" - 新绑定的触发键
+    "callback" - 新按键绑定的处理函数
+    "quickhelpText" - 在快速帮助中显示的文本（见 |NERDTree-?| ）
+    "override" - 如果为1，那么新的按键绑定会覆盖任何以前定义的 按键/作用范围。
+    可以用来覆盖默认的按键绑定。
 
-    Additionally, a "scope" argument may be supplied. This constrains the
-    mapping so that it is only activated if the cursor is on a certain object.
-    That object is then passed into the handling method. Possible values are:
-        "FileNode" - a file node
-        "DirNode" - a directory node
-        "Node" - a file or directory node
-        "Bookmark" - A bookmark
-        "all" - the keymap is not constrained to any scope (default). When
-        thei is used, the handling function is not passed any arguments.
+    此外，可以提供一个 "scope" 参数。限制按键绑定只在光标在确定的对象上时才被
+    激活。那个对象会被传递到处理函数。可能的值为：
+        "FileNode" - 文件节点
+        "DirNode" - 目录节点
+        "Node" - 文件或目录节点
+        "Bookmark" - 书签
+        "all" - 这个按键绑定默认不会限制任何作用范围。当它们被使用的时候，处
+        理函数不会被传递任何对象。
 
 
-    Example: >
+    例子： >
         call NERDTreeAddKeyMap({
                \ 'key': 'foo',
                \ 'callback': 'NERDTreeCDHandler',
@@ -1000,58 +995,51 @@ NERDTreeAddKeyMap({options})                             *NERDTreeAddKeyMap()*
             call a:dirnode.changeToDir()
         endfunction
 <
-    This code should sit in a file like ~/.vim/nerdtree_plugin/mymapping.vim.
-    It adds a (redundant) mapping on 'foo' which changes vim's CWD to that of
-    the current dir node. Note this mapping will only fire when the cursor is
-    on a directory node.
+    这些代码应该被放到类似 ~/.vim/nerdtree_plugin/mymapping.vim 的文件中。它
+    添加了一个（多余的）绑定 'foo' ，可以用来修改 vim 的 CWD 为当前目录节点。
+    注意这个绑定只会在光标位于目录节点上时触发。
 
 ------------------------------------------------------------------------------
-4.2. Menu API                                                *NERDTreeMenuAPI*
+4.2. 菜单 API                                                *NERDTreeMenuAPI*
 
 NERDTreeAddSubmenu({options})                           *NERDTreeAddSubmenu()*
-    Creates and returns a new submenu.
+    创建并返回一个新的子菜单。
 
-    {options} must be a dictionary and must contain the following keys:
-    "text" - the text of the submenu that the user will see
-    "shortcut" - a shortcut key for the submenu (need not be unique)
+    {options} 必须是一个字典类型，必须包含下面的键：
+    "text" - 显示给用户看的子菜单的文本
+    "shortcut" - 子菜单的快捷键（不必惟一）
 
-    The following keys are optional:
-    "isActiveCallback" - a function that will be called to determine whether
-    this submenu item will be displayed or not. The callback function must return
-    0 或 1.
-    "parent" - the parent submenu of the new submenu (returned from a previous
-    invocation of NERDTreeAddSubmenu()). If this key is left out then the new
-    submenu will sit under the top level menu.
+    下面的键是可选的：
+    "isActiveCallback" - 一个用来决定这个子菜单是否被展示的快捷键。这个回调函
+    数必须返回0或1。
+    "parent" - 新的子菜单的父菜单（从前一个 NERDTreeAddSubmenu()的调用返回）。
+    如果这个键没有指定值，那么新的子菜单会被现实在顶级菜单中。
 
-    See below for an example.
+    参考下面的例子。
 
 NERDTreeAddMenuItem({options})                         *NERDTreeAddMenuItem()*
-    Adds a new menu item to the NERD tree menu (see |NERDTreeMenu|).
+    在 NERD tree 菜单中添加一个新的菜单项（见 |NERDTreeMenu| ）。
 
-    {options} must be a dictionary and must contain the
-    following keys:
-    "text" - the text of the menu item which the user will see
-    "shortcut" - a shortcut key for the menu item (need not be unique)
-    "callback" - the function that will be called when the user activates the
-    menu item.
+    {options} 必须是一个字典类型，必须包含下面的键：
+    "text" - 显示给用户看的菜单项的文本
+    "shortcut" - 菜单项的快捷键（不必惟一）
+    "callback" - 用户激活菜单项的时候调用的函数
 
-    The following keys are optional:
-    "isActiveCallback" - a function that will be called to determine whether
-    this menu item will be displayed or not. The callback function must return
-    0 或 1.
-    "parent" - if the menu item belongs under a submenu then this key must be
-    specified. This value for this key will be the object that
-    was returned when the submenu was created with |NERDTreeAddSubmenu()|.
+    下面的键是可选的：
+    "isActiveCallback" - 一个用来决定这个菜单项是否被展示的快捷键。这个回调函
+    数必须返回0或1。
+    "parent" - 如果这个菜单项属于某个子菜单，那么这个键必须被设置。这个键的值
+    需要被设置为使用 |NERDTreeAddSubmenu()| 创建子菜单时返回的那个对象。
 
-    See below for an example.
+    参考下面的例子。
 
 NERDTreeAddMenuSeparator([{options}])             *NERDTreeAddMenuSeparator()*
-    Adds a menu separator (a row of dashes).
+    添加一个菜单分割线（一行虚线）。
 
-    {options} is an optional dictionary that may contain the following keys:
-    "isActiveCallback" - see description in |NERDTreeAddMenuItem()|.
+    {options} 是一个可选的，可以包含下面键的字典类型：
+    "isActiveCallback" - 参见 |NERDTreeAddMenuItem()| 中的描述。
 
-Below is an example of the menu API in action. >
+下面是一个菜单 API 的实际的例子。 >
     call NERDTreeAddMenuSeparator()
 
     call NERDTreeAddMenuItem({
@@ -1075,17 +1063,16 @@ Below is an example of the menu API in action. >
                 \ 'callback': 'SomeFunction',
                 \ 'parent': submenu })
 <
-This will create the following menu: >
+这会创建如下所示的菜单： >
   --------------------
   a (t)op level menu item
   a (s)ub menu
 <
-Where selecting "a (s)ub menu" will lead to a second menu: >
+选择 "a (s)ub menu" 会展示第二级菜单： >
   (n)ested item 1
   (n)ested item 2
 <
-When any of the 3 concrete menu items are selected the function "SomeFunction"
-will be called.
+当三个实际的个菜单项中任何一个被选中后 "SomeFunction" 会被调用。
 
 ------------------------------------------------------------------------------
 NERDTreeRender()                                            *NERDTreeRender()*
@@ -1093,135 +1080,120 @@ NERDTreeRender()                                            *NERDTreeRender()*
     tree and you want to it to be reflected in the UI.
 
 ==============================================================================
-5. About                                                       *NERDTreeAbout*
+5. 关于                                                        *NERDTreeAbout*
 
-The author of the NERD tree is a terrible terrible monster called Martyzilla
-who gobbles up small children with milk and sugar for breakfast.
+NERD tree 的作者是一个叫 Martyzilla 的十分可怕地怪兽，他在早餐的时候配着牛奶和
+糖大口的吃小朋友。
 
-He can be reached at martin.grenfell at gmail dot com. He would love to hear
-from you, so feel free to send him suggestions and/or comments about this
-plugin.  Don't be shy --- the worst he can do is slaughter you and stuff you in
-the fridge for later ;)
+他的电子邮件地址为 martin.grenfell 圈 gmail 点 com 。他很乐意收到你的邮件，所
+以请把你对这个插件的建议 和/或 评论直接发送给他。不要害羞 --- 他能做的最坏的事
+情也不过是把你剁了，然后冷藏到冰箱里面晚一点再吃 ;)
 
-The latest stable versions can be found at
+最新的稳定版在
     http://www.vim.org/scripts/script.php?script_id=1658
 
-The latest dev versions are on github
+最新的开发版在 github
     http://github.com/scrooloose/nerdtree
 
 
 ==============================================================================
-6. Changelog                                               *NERDTreeChangelog*
+6. 更新日志                                                *NERDTreeChangelog*
 
-Next
-    - add 'scope' argument to the key map API
-    - add NERDTreeCustomIgnoreFilter hook - needs doc
-    - add magic [[dir]] and [[file]] flags to NERDTreeIgnore
+下一步
+    - 为按键绑定 API 添加 'scope' 参数
+    - 添加 NERDTreeCustomIgnoreFilter 钩子函数 - 需要文档
+    - 为 NERDTreeIgnore 添加 [[dir]] 和 [[file]] 魔法标志
 
 4.2.0
-    - Add NERDTreeDirArrows option to make the UI use pretty arrow chars
-      instead of the old +~| chars to define the tree structure (sickill)
-    - shift the syntax highlighting out into its own syntax file (gnap)
-    - add some mac specific options to the filesystem menu - for macvim
-      only (andersonfreitas)
-    - Add NERDTreeMinimalUI option to remove some non functional parts of the
-      nerdtree ui (camthompson)
-    - tweak the behaviour of :NERDTreeFind - see :help :NERDTreeFind for the
-      new behaviour (benjamingeiger)
-    - if no name is given to :Bookmark, make it default to the name of the
-      target file/dir (minyoung)
-    - use 'file' completion when doing copying, create, and move
-      operations (EvanDotPro)
-    - lots of misc bug fixes (paddyoloughlin, sdewald, camthompson, Vitaly
+    - 添加 NERDTreeDirArrows 选项来使 UI 使用好看的箭头符号代替旧的 +~| 字符来
+      定义树结构(sickill)
+    - 把语法高亮移动到独自的高亮文件中(gnap)
+    - 在文件菜单中为 mac 添加单独的选项 - 只对 macvim 有效 (andersonfreitas)
+    - 添加 NERDTreeMinimalUI 选项来移除 nerdtree ui 中一些非功能性的部分
+      (camthompson)
+    - 调整 :NERDTreeFind 的行为 - 新行为参见 :help :NERDTreeFind
+      (benjamingeiger)
+    - 如果没有给 :Bookmark 指定名称，它会使用目标文件/目录的名称(minyoung)
+    - 当进行复制、创建和移动操作的时候使用 'file' 补全(EvanDotPro)
+    - 很多的bug修复 (paddyoloughlin, sdewald, camthompson, Vitaly
       Bogdanov, AndrewRadev, mathias, scottstvnsn, kml, wycats, me RAWR!)
 
 4.1.0
-    features:
-    - NERDTreeFind to reveal the node for the current buffer in the tree,
-      see |NERDTreeFind|. This effectively merges the FindInNERDTree plugin (by
-      Doug McInnes) into the script.
-    - make NERDTreeQuitOnOpen apply to the t/T keymaps too. Thanks to Stefan
-      Ritter and Rémi Prévost.
-    - truncate the root node if wider than the tree window. Thanks to Victor
-      Gonzalez.
+    特性：
+    - NERDTreeFind to 展现树的当前缓冲区，参见 |NERDTreeFind| 。插件合并了
+      FindInNERDTree(作者 Doug McInnes)
+    - NERDTreeQuitOnOpen 对 t/T 绑定生效。感谢Stefan Ritter 和 Rémi Prévost
+    - 如果比树窗口宽，缩短根节点。感谢 Victor Gonzalez 。
 
-    bugfixes:
-    - really fix window state restoring
-    - fix some win32 path escaping issues. Thanks to Stephan Baumeister, Ricky,
-      jfilip1024, and Chris Chambers
+    bug修复:
+    - 完全修复了窗口状态还原。
+    - 修复一些 win32 路径转移的问题。感谢 Stephan Baumeister, Ricky,
+      jfilip1024, and Chris Chambers 。
 
 4.0.0
-    - add a new programmable menu system (see :help NERDTreeMenu).
-    - add new APIs to add menus/menu-items to the menu system as well as
-      custom key mappings to the NERD tree buffer (see :help NERDTreeAPI).
-    - removed the old API functions
-    - added a mapping to maximize/restore the size of nerd tree window, thanks
-      to Guillaume Duranceau for the patch. See :help NERDTree-A for details.
+    - 添加一个新的可编程的菜单系统（参见 :help NERDTreeMenu ）。
+    - 添加新的 API 来添加菜单/菜单项到菜单系统和添加自定义绑定到NERD tree
+      缓冲区（参见 :help NERDTreeAPI ）。
+    - 移除旧的 API
+    - 添加一个新的绑定来最大化/还原 nert tree 的窗口，感谢
+      Guillaume Duranceau 的补丁。详见 :help NERDTree-A 。
 
-    - fix a bug where secondary nerd trees (netrw hijacked trees) and
-      NERDTreeQuitOnOpen didnt play nicely, thanks to Curtis Harvey.
-    - fix a bug where the script ignored directories whose name ended in a dot,
-      thanks to Aggelos Orfanakos for the patch.
-    - fix a bug when using the x mapping on the tree root, thanks to Bryan
-      Venteicher for the patch.
-    - fix a bug where the cursor position/window size of the nerd tree buffer
-      wasnt being stored on closing the window, thanks to Richard Hart.
-    - fix a bug where NERDTreeMirror would mirror the wrong tree
+    - 修复次等的 nerd tree (netrw hijacked trees) 和 NERDTreeQuitOnOpen
+      选项共存的问题，感谢 Curtis Harvey 。
+    - 修复插件忽略以点号结尾的目录的问题，感谢 Aggelos Orfanakos 的补丁。
+    - 修复 x 按键在树的根节点的问题，感谢 Bryan Venteicher 的补丁。
+    - 修复 nerd tree 缓冲区内的光标位置/窗口大小在关闭时没有被正确存储的
+      问题，感谢 Richard Hart 。
+    - 修复 NERDTreeMirror 镜像错误的树的问题
 
 3.1.1
-    - fix a bug where a non-listed no-name buffer was getting created every
-      time the tree windows was created, thanks to Derek Wyatt and owen1
-    - make <CR> behave the same as the 'o' mapping
-    - some helptag fixes in the doc, thanks strull
-    - fix a bug when using :set nohidden and opening a file where the previous
-      buf was modified. Thanks iElectric
-    - other minor fixes
+    - 修复每次树窗口被创建的时候一个没有列表没有名字的缓冲区被创建的bug，
+      感谢 Derek Wyatt and owen1
+    - 使 <CR> 行为和 'o' 绑定一样。
+    - 修复文档中一些帮助标签，感谢 strull
+    - 修复使用 :set nohidden和打开前一个缓冲区被修改过的文件中的bug。感
+      谢 iElectric
+    - 其它小修复
 
 3.1.0
-    New features:
-    - add mappings to open files in a vsplit, see :help NERDTree-s and :help
-      NERDTree-gs
-    - make the statusline for the nerd tree window default to something
-      hopefully more useful. See :help 'NERDTreeStatusline'
-    Bugfixes:
-    - make the hijack netrw functionality work when vim is started with "vim
-      <some dir>" (thanks to Alf Mikula for the patch).
-    - fix a bug where the CWD wasnt being changed for some operations even when
-      NERDTreeChDirMode==2 (thanks to Lucas S. Buchala)
-    - add -bar to all the nerd tree :commands so they can chain with other
-      :commands (thanks to tpope)
-    - fix bugs when ignorecase was set (thanks to nach)
-    - fix a bug with the relative path code (thanks to nach)
-    - fix a bug where doing a :cd would cause :NERDTreeToggle to fail (thanks nach)
-
+    小功能:
+    - 添加在竖直窗口打开文件的绑定，参见 :help NERDTree-s 和 :help NERDTree-gs
+    - 将 nerd tree 的窗口状态栏的默认值设置为一些更加有用的值。参见
+      :help 'NERDTreeStatusline'
+    bug修复:
+    - 劫持 netrw 对 "vim <some dir>" 方式打开的也生效(感谢 Alf Mikula 的补丁)
+    - 修复 CWD 没有被一些操作改变的情况，即使是设置了 NERDTreeChDirMode==2（感
+      谢 Lucas S. Buchala ）
+    - 给所有 nerd tree :commands 添加 -bar，这样他们就可以链式调用其他
+      :commands。 （感谢 tpope）
+    - 修复设置忽略中的bug （感谢 nach ）
+    - 修复相对路径的一个bug （感谢 nach ）
+    - 修复使用 :cd 会导致 :NERDTreeToggle 失败的bug （感谢 nach ）
 
 3.0.1
-    Bugfixes:
-    - fix bugs with :NERDTreeToggle and :NERDTreeMirror when 'hidden
-      was not set
-    - fix a bug where :NERDTree <path> would fail if <path> was relative and
-      didnt start with a ./ or ../  Thanks to James Kanze.
-    - make the q mapping work with secondary (:e <dir>  style) trees,
-      thanks to jamessan
-    - fix a bunch of small bugs with secondary trees
+    bug修复:
+    - 修复'hidden' 没有设置时 :NERDTreeToggle 和 :NERDTreeMirror 中的bug
+    - 修复当 <path> 是相对路径并且没有以 ./ 或 ../开头的时候，
+      :NERDTree <path> 会失败的bug，感谢 James Kanze 。
+    - 使按键绑定 q 对次等（:e <dir> 形式） nerd tree 生效，感谢 jamessan
+    - 修复次等 nerd tree 中大把的错误。
 
-    More insane refactoring.
+    许多疯狂的重构。
 
 3.0.0
-    - hijack netrw so that doing an :edit <directory>  will put a NERD tree in
-      the window rather than a netrw browser. See :help 'NERDTreeHijackNetrw'
-    - allow sharing of trees across tabs, see :help :NERDTreeMirror
-    - remove "top" and "bottom" as valid settings for NERDTreeWinPos
-    - change the '<tab>' mapping to 'i'
-    - change the 'H' mapping to 'I'
-    - lots of refactoring
+    - 劫持 netrw ，当使用 :edit <directory> 会将一个 NERD tree 放入窗口，而
+      不是一个 netrw 浏览器。见 :help 'NERDTreeHijackNetrw'
+    - 允许跨标签分享树，参见 :help :NERDTreeMirror
+    - 移除 NERDTreeWinPos 中 "top" 和 "bottom" 设置
+    - 改变 '<tab>' 绑定为 'i'
+    - 改变默认的 'H' 绑定为 'I'
+    - 大量重构
 
 ==============================================================================
-7. Credits                                                   *NERDTreeCredits*
+7. 贡献                                                      *NERDTreeCredits*
 
-Thanks to the following people for testing, bug reports, ideas etc. Without
-you I probably would have got bored of the hacking the NERD tree and
-just downloaded pr0n instead.
+感谢下面的提供测试，bug报告，新想法等的人。没有你们我可能已经厌烦了继续开发
+NERD tree 而去直接下载毛片了。
 
     Tim Carey-Smith (halorgium)
     Vigil
@@ -1287,7 +1259,7 @@ just downloaded pr0n instead.
     Benjamin Geiger (benjamingeiger)
 
 ==============================================================================
-8. License                                                   *NERDTreeLicense*
+8. 授权                                                      *NERDTreeLicense*
 
-The NERD tree is released under the wtfpl.
+NERD tree 使用 wtfpl 协议发布。
 See http://sam.zoy.org/wtfpl/COPYING.
