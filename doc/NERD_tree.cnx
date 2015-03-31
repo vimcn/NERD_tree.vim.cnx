@@ -13,10 +13,10 @@
 
                                   参考手册~
 
-                译者：闲耘™(hotoo.cn[AT]gmail.com)
-                      Asins(asinsimple[AT]gmail.com)
-                      codepiano(codepiano.li[AT]gmail.com)
-    Fernando "Firef0x" G.P. da Silva(firefgx{aT)gmail[d0t}com)
+                译者：闲耘™ <hotoo.cn[AT]gmail.com>
+                      Asins <asinsimple[AT]gmail.com>
+                      codepiano <codepiano.li[AT]gmail.com>
+                      Fernando G.P. da Silva <firefgx[AT]gmail[d0t]com>
 
 
 
@@ -1116,17 +1116,17 @@ NERD tree 的作者是一只叫“妈斯拉”（Martyzilla）的十分可怕的
 
 4.2.0
     - 添加 NERDTreeDirArrows 选项来使用户界面使用好看的箭头符号代替旧的 +~| 字
-      符来定义树结构(sickill)
-    - 把语法高亮移动到独自的高亮文件中(gnap)
-    - 在文件菜单中为 mac 添加单独的选项 - 只对 MacVim 有效 (andersonfreitas)
+      符来定义树结构（sickill）
+    - 把语法高亮移动到独自的高亮文件中（gnap）
+    - 在文件菜单中为 Mac 添加单独的选项 - 只对 MacVim 有效（andersonfreitas）
     - 添加 NERDTreeMinimalUI 选项来删除 NERD tree 用户界面中一些非功能性的部分
-      (camthompson)
+      （camthompson）
     - 调整 :NERDTreeFind 的行为 - 新行为请参阅 :help :NERDTreeFind
-      (benjamingeiger)
-    - 如果没有给 :Bookmark 指定名称，它会使用目标文件/目录的名称(minyoung)
-    - 当进行复制、新建和移动操作的时候使用 'file' 补全(EvanDotPro)
-    - 很多的错误修复 (paddyoloughlin, sdewald, camthompson, Vitaly
-      Bogdanov, AndrewRadev, mathias, scottstvnsn, kml, wycats, 我 吼吼！)
+      （benjamingeiger）
+    - 如果没有给 :Bookmark 指定名称，它会使用目标文件/目录的名称（minyoung）
+    - 当进行复制、新建和移动操作的时候使用 'file' 补全（EvanDotPro）
+    - 很多的错误修复（paddyoloughlin, sdewald, camthompson, Vitaly
+      Bogdanov, AndrewRadev, mathias, scottstvnsn, kml, wycats, 我 吼吼！）
 
 4.1.0
     新特性：
@@ -1135,7 +1135,7 @@ NERD tree 的作者是一只叫“妈斯拉”（Martyzilla）的十分可怕的
     - NERDTreeQuitOnOpen 对 t/T 映射生效。感谢 Stefan Ritter 和 Rémi Prévost
     - 如果比树窗口宽，缩短根节点。感谢 Victor Gonzalez 。
 
-    错误修复:
+    错误修复：
     - 完全修复了窗口状态还原。
     - 修复一些 win32 路径转移的问题。感谢 Stephan Baumeister, Ricky,
       jfilip1024 和 Chris Chambers 。
@@ -1166,12 +1166,12 @@ NERD tree 的作者是一只叫“妈斯拉”（Martyzilla）的十分可怕的
     - 其它小修复
 
 3.1.0
-    新特性:
+    新特性：
     - 添加在竖直窗口打开文件的映射，请参阅 :help NERDTree-s 和
       :help NERDTree-gs
     - 将 NERD tree 的窗口状态栏的默认值设置为一些更加有用的值。请参阅
       :help 'NERDTreeStatusline'
-    错误修复:
+    错误修复：
     - 替换 netrw 对以 "vim <some dir>" 方式打开的 Vim 也生效
       （感谢 Alf Mikula 的补丁）
     - 修复当前工作目录（CWD）没有被一些操作改变的情况，即使是设置了
